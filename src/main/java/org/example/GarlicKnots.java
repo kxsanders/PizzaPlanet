@@ -8,6 +8,10 @@ public class GarlicKnots extends Product {
         this.quantity = quantity;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
     @Override
     public double calculatePrice() {
         return getBasePrice() * quantity;

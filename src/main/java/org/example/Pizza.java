@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Pizza extends Product {
@@ -11,7 +12,24 @@ public class Pizza extends Product {
         super(name, size, basePrice);
         this.crustType = crustType;
         this.stuffedCrust = stuffedCrust;
-        this.toppings = toppings;
+        this.toppings = new ArrayList<>();
+    }
+
+    //getters
+    public CrustType getCrustType() {
+        return crustType;
+    }
+
+    public List<Topping> getToppings() {
+        return toppings;
+    }
+
+    public void setStuffedCrust(boolean stuffedCrust) {
+        this.stuffedCrust = stuffedCrust;
+    }
+
+    public boolean isStuffedCrust() {
+        return stuffedCrust;
     }
 
     public void addTopping(Topping topping) {
@@ -42,7 +60,7 @@ public class Pizza extends Product {
 
     @Override
     public String toString() {
-        return  getName() + " Pizza (" + getSize() + ", " + crustType + " crust)" + (stuffedCrust ? " [Stuffed Crust]" : "") +
-                "\nToppings: " + toppings + "\nPrice: $" + calculatePrice();
+        return getName() + " (" + getSize() + ", " + crustType + " crust)" + (stuffedCrust ? " [Stuffed Crust]" : "") +
+                "\nToppings: " + toppings + "\nPrice: $" + String.format("%.2f", calculatePrice());
     }
 }
