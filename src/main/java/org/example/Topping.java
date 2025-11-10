@@ -7,12 +7,13 @@ private boolean isPremium;
 private boolean isExtra;
 private double price;
 
-    public Topping(String name, ToppingCategory category, boolean isPremium, boolean isExtra, double price) {
+    public Topping(String name, ToppingCategory category, boolean isExtra, Size size) {
         this.name = name;
         this.category = category;
-        this.isPremium = isPremium;
         this.isExtra = isExtra;
-        this.price = price;
+
+        // auto calculate price
+        this.price = PricingUtility.getToppingPrice(size, this);
     }
 
     public String getName() {
@@ -21,10 +22,6 @@ private double price;
 
     public ToppingCategory getCategory() {
         return category;
-    }
-
-    public boolean isPremium() {
-        return isPremium;
     }
 
     public boolean isExtra() {
@@ -37,7 +34,7 @@ private double price;
 
     @Override
     public String toString() {
-        return name + (isExtra ? " (extra)" : "") + " - $" + price;
+        return name + (isExtra ? " (extra)" : "") + " - $" + String.format("%.2f", price);
     }
 
 

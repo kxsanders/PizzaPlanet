@@ -1,10 +1,10 @@
 package org.example;
 
 public enum CrustType {
-    THIN, HAND_TOSSED, DEEP_DISH, GLUTEN_FREE;
+    REGULAR, THIN, THICK, CAULIFLOWER;
 
     @Override
     public String toString() {
-        return name().replace("_", " ").toLowerCase();
+        return name().charAt(0) + name().substring(1).toLowerCase() + " crust";
     }
 }

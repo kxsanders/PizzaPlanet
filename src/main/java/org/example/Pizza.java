@@ -50,11 +50,13 @@ public class Pizza extends Product {
 
     @Override
     public double calculatePrice() {
-        double total = getBasePrice();
+        double total = PricingUtility.getBasePrice(getSize());
         for (Topping t : toppings) {
-            total += t.getPrice();
+            total += PricingUtility.getToppingPrice(getSize(), t);
         }
-        if (stuffedCrust) total += 2.00;
+        if (stuffedCrust) {
+            total += 2.00; //add on for stuffed
+        }
         return total;
     }
 
