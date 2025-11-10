@@ -10,17 +10,21 @@ public class PizzaBuilder {
 
     public void startNewPizza(String name, Size size, double basePrice, CrustType crustType, boolean stuffedCrust) {
         toppings.clear(); //reset toppings for a new pizza
-        currentPizza = new Pizza(name, size, basePrice, crustType, stuffedCrust, toppings);
+        currentPizza = new Pizza(name, size, basePrice, crustType, stuffedCrust);
     }
 
     //add topping
     public void addTopping(Topping topping) {
-        toppings.add(topping);
+        if (currentPizza != null) {
+            currentPizza.addTopping(topping);
+        }
     }
 
     //remove topping
     public void removeTopping(String toppingName){
-        toppings.removeIf(t -> t.getName().equalsIgnoreCase(toppingName));
+        if (currentPizza != null) {
+            currentPizza.removeTopping(toppingName);
+        }
     }
 
     //toggle stuffed crust
@@ -32,17 +36,27 @@ public class PizzaBuilder {
 
     //check if pizza has cheese
     public boolean hasCheese() {
-        return toppings.stream().anyMatch(t -> t.getCategory() == ToppingCategory.CHEESE);
+        if (currentPizza == null) return false;
+        return currentPizza.getToppings().stream()
+                .anyMatch(t -> t.getCategory() == ToppingCategory.CHEESE);
     }
 
     //can add extra cheese only if it already has cheese
     public boolean canAddExtraCheese() {
-        return hasCheese() && toppings.stream()
-                .noneMatch(t -> t.getName().equalsIgnoreCase("Extra Cheese"));
+        if (currentPizza == null) return false;
+
+        boolean hasCheese = currentPizza.getToppings().stream()
+                .anyMatch(t -> t.getCategory() == ToppingCategory.CHEESE);
+
+        boolean hasExtraCheese = currentPizza.getToppings().stream()
+                .anyMatch(t -> t.getName().equalsIgnoreCase("Extra Cheese"));
+
+        return hasCheese && !hasExtraCheese;
     }
 
     //calculate the current price
     public double calculateCurrentPrice() {
+        if (currentPizza == null) return 0.0;
         return currentPizza.calculatePrice();
     }
 

@@ -8,7 +8,7 @@ public class Pizza extends Product {
     private boolean stuffedCrust;
     private List<Topping> toppings;
 
-    public Pizza(String name, Size size, double basePrice, CrustType crustType, boolean stuffedCrust, List<Topping> toppings) {
+    public Pizza(String name, Size size, double basePrice, CrustType crustType, boolean stuffedCrust) {
         super(name, size, basePrice);
         this.crustType = crustType;
         this.stuffedCrust = stuffedCrust;
