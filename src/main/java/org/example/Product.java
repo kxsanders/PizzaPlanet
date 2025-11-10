@@ -2,10 +2,10 @@ package org.example;
 
 public abstract class Product {
 private String name;
-private String size;
+private Size size;
 private double basePrice;
 
-    public Product(String name, String size, double basePrice) {
+    public Product(String name, Size size, double basePrice) {
         this.name = name;
         this.size = size;
         this.basePrice = basePrice;
@@ -15,7 +15,7 @@ private double basePrice;
         return name;
     }
 
-    public String getSize() {
+    public Size getSize() {
         return size;
     }
 

@@ -1,9 +1,9 @@
 package org.example;
 
 public class Drink extends Product {
-    public String flavor;
+    public DrinkFlavor flavor;
 
-    public Drink(String name, String size, double basePrice, String flavor) {
+    public Drink(String name, Size size, double basePrice, DrinkFlavor flavor) {
         super(name, size, basePrice);
         this.flavor = flavor;
     }
