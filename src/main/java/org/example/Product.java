@@ -1,18 +1,18 @@
 package org.example;
 
 public abstract class Product {
-private String name;
+private String productName;
 private Size size;
 private double basePrice;
 
     public Product(String name, Size size, double basePrice) {
-        this.name = name;
+        this.productName = name;
         this.size = size;
         this.basePrice = basePrice;
     }
 
     public String getName() {
-        return name;
+        return productName;
     }
 
     public Size getSize() {
@@ -27,6 +27,6 @@ private double basePrice;
 
     @Override
     public String toString() {
-        return name + " (" + size + ") - $" + basePrice;
+        return productName + " (" + size + ") - $" + basePrice;
     }
 }
