@@ -62,7 +62,7 @@ public class Pizza extends Product {
 
     @Override
     public String toString() {
-        return getName() + " (" + getSize() + ", " + crustType + " crust)" + (stuffedCrust ? " [Stuffed Crust]" : "") +
+        return getName() + " [" + getSize().pizzaLabel() + ", " + crustType + (stuffedCrust ? ", Stuffed Crust" : "") + "]" +
                 "\nToppings: " + toppings + "\nPrice: $" + String.format("%.2f", calculatePrice());
     }
 }

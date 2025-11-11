@@ -9,23 +9,21 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class FileManager {
-    /// decided to use BOTH CSV and txt. file to make a singular timestamp
-    /// where both saves at the same time but each can be called separately
-    /// Assisted by research
-
 
     private static final String RECEIPTS_FOLDER = "src/main/resources/receipts/";
+    private static final String MASTER_CSV = RECEIPTS_FOLDER + "receipt.csv";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
 
     public void saveOrder(Order order) {
-        //Ensure receipts folfer exists
+
+        //Ensure folder exists
         new File(RECEIPTS_FOLDER).mkdirs();
 
         String timestamp = LocalDateTime.now().format(FORMATTER);
-        String baseFileName = RECEIPTS_FOLDER + timestamp;
+        String txtFile = RECEIPTS_FOLDER + timestamp + ".txt";
 
-        saveOrderAsText(order, baseFileName + ".txt");
-        saveOrderAsCSV(order, baseFileName + ".csv");
+        saveOrderAsText(order, txtFile);
+        saveOrderAsCSV(order);
     }
 
     //save the txt file
@@ -58,57 +56,66 @@ public class FileManager {
     }
 
     //save the CSV file
-    private void saveOrderAsCSV(Order order, String filePath) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+    private void saveOrderAsCSV(Order order) {
 
-            //Header
-            writer.println("OrderID,ProductType,Name,Size,CrustType,Toppings,StuffedCrust,Quantity,Price");
+
+        boolean needsHeader = !new File(MASTER_CSV).exists();
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(MASTER_CSV, true))) {
+
+            if (needsHeader) {
+                writer.println("OrderID | ProductType | Name | Size | CrustType | Toppings | StuffedCrust | Qty | Price");
+            }
 
             for (Product product : order.getProducts()) {
 
+                // ---------- PIZZA ----------
                 if (product instanceof Pizza pizza) {
-                    String toppings = pizza.getToppings().stream().
-                            map(Topping::getName).reduce((a, b) -> a + " | " + b).orElse("");
+
+                    String toppings = pizza.getToppings().stream()
+                            .map(Topping::getName)
+                            .reduce((a, b) -> a + " | " + b)
+                            .orElse("");
 
                     writer.printf("%d,Pizza,%s,%s,%s,\"%s\",%b,,%.2f%n",
-                            order.getOrderId(),
-                            product.getName(),
-                            product.getSize(),
-                            pizza.getCrustType(),
-                            toppings,
-                            pizza.isStuffedCrust(),
-                            pizza.calculatePrice()
+                            order.getOrderId(),      // OrderID
+                            product.getName(),       // Name
+                            product.getSize(),       // Size
+                            pizza.getCrustType(),    // Crust
+                            toppings,                // Toppings
+                            pizza.isStuffedCrust(),  // Stuffed
+                            pizza.calculatePrice()   // Price
                     );
                 }
 
+                // ---------- DRINK ----------
                 else if (product instanceof Drink drink) {
 
-                    writer.printf("%d,Drink,%s,%s,,,%b,1,%.2f%n",
-                            order.getOrderId(),
-                            product.getName(),
-                            product.getSize(),
-                            false,
-                            drink.calculatePrice()
+                    writer.printf("%d,Drink,%s,%s,,, ,1,%.2f%n",
+                            order.getOrderId(),      // OrderID
+                            product.getName(),       // Name
+                            product.getSize(),       // Size
+                            drink.calculatePrice()   // Price
                     );
                 }
 
+                // ---------- GARLIC KNOTS ----------
                 else if (product instanceof GarlicKnots knots) {
 
-                    writer.printf("%d,GarlicKnots,%s,%s,,,%d,%.2f%n",
-                            order.getOrderId(),
-                            product.getName(),
-                            product.getSize(),
-                            knots.getQuantity(),
-                            knots.calculatePrice()
-                            );
+                    writer.printf("%d,GarlicKnots,%s,,,,,%d,%.2f%n",
+                            order.getOrderId(),      // OrderID
+                            product.getName(),       // Name
+                            knots.getQuantity(),     // Quantity
+                            knots.calculatePrice()   // Price
+                    );
                 }
             }
 
-            //footer: total
+            // total row
             writer.printf(",,TOTAL,,,,,,%.2f%n", order.calculateTotal());
-            System.out.println("CSV receipt saved: " + filePath);
-        }
-        catch (IOException e) {
+            System.out.println("CSV receipt saved: " + MASTER_CSV);
+
+        } catch (IOException e) {
             System.err.println("Error writing to CSV receipt.");
         }
     }

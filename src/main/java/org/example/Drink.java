@@ -15,6 +15,7 @@ public class Drink extends Product {
 
     @Override
     public String toString() {
-        return getName() + " (" + flavor + ", " + getSize() + ") - $" + calculatePrice();
+        return getName() + " [" + flavor + ", " + getSize().drinkLabel()
+                + "] - $" + String.format("%.2f", calculatePrice());
     }
 }

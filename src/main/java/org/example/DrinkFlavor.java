@@ -7,6 +7,7 @@ public enum DrinkFlavor {
 
     @Override
     public String toString() {
-        return name().replace("_", " ").toLowerCase();
+        String formatted = name().replace("_", " ").toLowerCase();
+        return formatted.substring(0, 1).toUpperCase() + formatted.substring(1);
     }
 }
