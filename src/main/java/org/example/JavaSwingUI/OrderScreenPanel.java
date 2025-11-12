@@ -3,6 +3,7 @@ package org.example.JavaSwingUI;
 import org.example.Drink;
 import org.example.Order;
 import org.example.Product;
+import org.example.Size;
 
 import javax.swing.*;
 import java.awt.*;
@@ -84,7 +85,7 @@ public class OrderScreenPanel extends JPanel {
         add(southPanel, BorderLayout.SOUTH);
 
         //ACTIONS
-        //addPizza.addActionListener(e -> onAddPizza());
+        addPizza.addActionListener(e -> onAddPizza());
         //addDrink.addActionListener(e -> onAddDrink());
         //addKnots.addActionListener(e -> onAddKnots());
         //checkout.addActionListener(e -> onCheckout());
@@ -104,7 +105,70 @@ public class OrderScreenPanel extends JPanel {
     }
 
     //add handlers for each button
+    private void onAddPizza() {
+        String[] modes = {"Build your Own", "Signature Pizzas"};
+        String mode = (String) JOptionPane.showInputDialog(this, "Choose pizza mode:", "Add Pizza",
+            JOptionPane.QUESTION_MESSAGE, null, modes, modes[0]);
 
+    if (mode == null)
+        return; //user cancelled
+
+        if(mode.equals("Signature Pizzas")) {
+            String[] sig = {"Solar Flare (Margherita)", "Cosmic Garden (Veggie)", "Milky Way (Supreme)",
+            "Meteor Feast (Meat Lovers)", "Orbit Delight (Hawaiian)"};
+            String pick = (String) JOptionPane.showInputDialog(
+                    this, "Choose your signature pizza:", "Signature Pizzas",
+                    JOptionPane.QUESTION_MESSAGE, null, sig, sig[0]);
+
+            if (pick == null)
+                return;
+
+            org.example.Pizza pizza = switch (pick) {
+                case "Solar Flare (Margherita)" -> org.example.SignaturePizzaHelper.margherita();
+                case "Cosmic Garden (Veggie)" -> org.example.SignaturePizzaHelper.veggie();
+                case "Milky Way (Supreme)" -> org.example.SignaturePizzaHelper.supreme();
+                case "Meteor Feast (Meat Lovers)" -> org.example.SignaturePizzaHelper.meatLovers();
+                case "Orbit Delight (Hawaiian)" -> org.example.SignaturePizzaHelper.hawaiian();
+                default -> null;
+            };
+
+            if (pizza!= null) {
+                currentOrder.addProduct(pizza);
+                updateSummary();
+            }
+
+            return;
+        }
+
+        //BYO PIZZA
+        org.example.Size size = (org.example.Size) JOptionPane.showInputDialog(
+                this, "Select size:", "Build Your Own",
+                JOptionPane.QUESTION_MESSAGE, null, org.example.Size.values(),
+                org.example.Size.MEDIUM);
+
+        if (size == null)
+            return;
+
+        org.example.CrustType crust = (org.example.CrustType) JOptionPane.showInputDialog(
+          this, "Select crust type:", "Build Your Own",
+                JOptionPane.QUESTION_MESSAGE, null, org.example.CrustType.values(),
+                org.example.CrustType.REGULAR);
+
+        if (crust == null)
+            return;
+
+        int stuffed = JOptionPane.showConfirmDialog(this, "Stuffed crust?", "Build Your Own",
+                JOptionPane.YES_NO_OPTION);
+        boolean stuffedCrust = stuffed == JOptionPane.YES_OPTION;
+
+        double base = org.example.PricingUtility.getBasePrice(size);
+
+        org.example.Pizza pizza = new org.example.Pizza("Custom Pizza", size, base, crust, stuffedCrust,
+                new java.util.ArrayList<>());
+        currentOrder.addProduct(pizza);
+        updateSummary();
+
+}
 
 
 }

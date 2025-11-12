@@ -1,8 +1,6 @@
 package org.example;
 
-import org.example.EnumClasses.CrustType;
-import org.example.EnumClasses.Size;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class SignaturePizza extends Pizza {
@@ -14,7 +12,7 @@ public class SignaturePizza extends Pizza {
                           CrustType crustType,
                           boolean stuffedCrust,
                           List<Topping> defaultToppings) {
-        super(signatureName, size, basePrice, crustType, stuffedCrust);
+        super(signatureName, size, basePrice, crustType, stuffedCrust, new ArrayList<>(defaultToppings));
         this.signatureName = signatureName;
 
         //Apply default toppings to this pizza

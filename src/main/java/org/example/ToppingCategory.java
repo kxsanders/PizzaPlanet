@@ -1,4 +1,4 @@
-package org.example.EnumClasses;
+package org.example;
 
 public enum ToppingCategory {
     MEAT, VEGGIE, CHEESE, SAUCE, OTHER;

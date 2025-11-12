@@ -1,7 +1,5 @@
 package org.example;
 
-import org.example.EnumClasses.Size;
-
 public abstract class Product {
 private String productName;
 private Size size;

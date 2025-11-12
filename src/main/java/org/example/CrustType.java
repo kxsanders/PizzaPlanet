@@ -1,4 +1,4 @@
-package org.example.EnumClasses;
+package org.example;
 
 public enum CrustType {
     REGULAR, THIN, THICK, CAULIFLOWER;

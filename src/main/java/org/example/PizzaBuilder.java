@@ -1,9 +1,5 @@
 package org.example;
 
-import org.example.EnumClasses.CrustType;
-import org.example.EnumClasses.Size;
-import org.example.EnumClasses.ToppingCategory;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,10 +8,16 @@ public class PizzaBuilder {
     private Pizza currentPizza;
     private List<Topping> toppings = new ArrayList<>();
 
-    public void startNewPizza(String name, Size size, double basePrice, CrustType crustType, boolean stuffedCrust) {
+    public void startNewPizza(String name, Size size, double basePrice, CrustType crustType, boolean stuffedCrust, List<Topping> toppings) {
         toppings.clear(); //reset toppings for a new pizza
-        currentPizza = new Pizza(name, size, basePrice, crustType, stuffedCrust);
+        currentPizza = new Pizza(name, size, basePrice, crustType, stuffedCrust, toppings);
     }
+
+    //overload method to allow console version and Swing version
+    public void startNewPizza(String name, Size size, double basePrice, CrustType crustType, boolean stuffedCrust) {
+        startNewPizza(name, size, basePrice, crustType, stuffedCrust, new ArrayList<>()); // default toppings list
+    }
+
 
     //add topping
     public void addTopping(Topping topping) {

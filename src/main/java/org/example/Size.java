@@ -1,4 +1,4 @@
-package org.example.EnumClasses;
+package org.example;
 
 public enum Size {
     SMALL(8, 2.00),

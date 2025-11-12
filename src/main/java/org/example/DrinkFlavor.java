@@ -1,4 +1,4 @@
-package org.example.EnumClasses;
+package org.example;
 
 public enum DrinkFlavor {
     COLA, LEMONADE, WATER, ROOT_BEER, DR_PEPPER;

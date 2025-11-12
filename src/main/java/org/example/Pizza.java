@@ -1,9 +1,5 @@
 package org.example;
 
-import org.example.EnumClasses.CrustType;
-import org.example.EnumClasses.Size;
-import org.example.EnumClasses.ToppingCategory;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,11 +8,11 @@ public class Pizza extends Product {
     private boolean stuffedCrust;
     private List<Topping> toppings;
 
-    public Pizza(String name, Size size, double basePrice, CrustType crustType, boolean stuffedCrust) {
+    public Pizza(String name, Size size, double basePrice, CrustType crustType, boolean stuffedCrust, List<Topping> toppings) {
         super(name, size, basePrice);
         this.crustType = crustType;
         this.stuffedCrust = stuffedCrust;
-        this.toppings = new ArrayList<>();
+        this.toppings = toppings;
     }
 
     //getters
