@@ -1,5 +1,8 @@
 package org.example;
 
+import org.example.EnumClasses.Size;
+import org.example.EnumClasses.ToppingCategory;
+
 public class Topping {
 private String name;
 private ToppingCategory category;

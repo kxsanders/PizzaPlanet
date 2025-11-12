@@ -1,5 +1,8 @@
 package org.example;
 
+import org.example.EnumClasses.CrustType;
+import org.example.EnumClasses.Size;
+
 import java.util.List;
 
 public class SignaturePizza extends Pizza {

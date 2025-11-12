@@ -1,5 +1,8 @@
 package org.example;
 
+import org.example.EnumClasses.DrinkFlavor;
+import org.example.EnumClasses.Size;
+
 public class Drink extends Product {
     public DrinkFlavor flavor;
 

@@ -1,6 +1,4 @@
-package org.example;
-
-import java.util.Locale;
+package org.example.EnumClasses;
 
 public enum DrinkFlavor {
     COLA, LEMONADE, WATER, ROOT_BEER, DR_PEPPER;
