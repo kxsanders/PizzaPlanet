@@ -3,7 +3,6 @@ package org.example;
 public class Topping {
 private String name;
 private ToppingCategory category;
-private boolean isPremium;
 private boolean isExtra;
 private double price;
 
@@ -28,8 +27,12 @@ private double price;
         return isExtra;
     }
 
-    public double getPrice() {
-        return price;
+    public double getPrice(Size size) {
+        return switch (category) {
+            case MEAT -> PricingUtility.getMeatPrice(size, isExtra);
+            case CHEESE -> PricingUtility.getCheesePrice(size, isExtra);
+            case VEGGIE, SAUCE, OTHER -> PricingUtility.getRegularToppingPrice();
+        };
     }
 
     @Override

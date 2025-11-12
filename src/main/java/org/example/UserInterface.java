@@ -47,6 +47,7 @@ public class UserInterface {
             System.out.println("4) Checkout");
             System.out.println("5) Review Order");
             System.out.println("6) Remove Item");
+            System.out.println("7) Add Sides");
             System.out.println("0) Cancel Order");
 
             System.out.print("Select: ");
@@ -59,6 +60,7 @@ public class UserInterface {
                 case "4" -> checkout(order);
                 case "5" -> reviewOrder(order);
                 case "6" -> removeItem(order);
+                case "7" -> addSides(order);
                 case "0" -> {
                     System.out.println("Order canceled.");
                     return;
@@ -541,6 +543,29 @@ public class UserInterface {
 
         order.addProduct(knots);
         System.out.println("Added: Garlic Knots x" + qty);
+    }
+
+    private void addSides(Order order) {
+        System.out.println("\nChoose a side (included in all sizes):");
+        System.out.println("1) Red Pepper");
+        System.out.println("2) Parmesan");
+        System.out.println("0) Cancel");
+
+        System.out.print("Select: ");
+        String input = scanner.nextLine();
+
+        switch (input) {
+            case "1" -> {
+                order.addProduct(new Sides("Red Pepper"));
+                System.out.println("Added Red Pepper (Included)");
+            }
+            case "2" -> {
+                order.addProduct(new Sides("Parmesan"));
+                System.out.println("Added Parmesan (Included)");
+            }
+            case "0" -> System.out.println("Canceled.");
+            default -> System.out.println("Invalid selection.");
+        }
     }
 
     private void removeItem(Order order) {

@@ -2,6 +2,7 @@ package org.example;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Pizza extends Product {
     private CrustType crustType;
@@ -50,19 +51,34 @@ public class Pizza extends Product {
 
     @Override
     public double calculatePrice() {
-        double total = PricingUtility.getBasePrice(getSize());
+        double total = getBasePrice();
+
+        //Sum topping prices
         for (Topping t : toppings) {
-            total += PricingUtility.getToppingPrice(getSize(), t);
+            total += t.getPrice(getSize());
         }
-        if (stuffedCrust) {
-            total += 2.00; //add on for stuffed
-        }
+
+        if (stuffedCrust)
+            total += 2.00;
+
         return total;
     }
 
     @Override
     public String toString() {
-        return getName() + " [" + getSize().pizzaLabel() + ", " + crustType + (stuffedCrust ? ", Stuffed Crust" : "") + "]" +
-                "\nToppings: " + toppings + "\nPrice: $" + String.format("%.2f", calculatePrice());
+        String toppingList = toppings.stream()
+                .map(t -> t.getName() + " - $" + String.format("%.2f", t.getPrice(getSize())))
+                .collect(Collectors.joining(", "));
+
+        String signatureLabel = getName().toLowerCase().contains("signature") ? "(Signature) " : "";
+
+        return String.format("%s%s [%s (\"%s\"), %s crust]\nToppings: [%s]\nPrice: $%.2f",
+                signatureLabel,
+                getName(),
+                getSize(),
+                getSize().getInches(),
+                crustType,
+                toppingList.isEmpty() ? "No toppings" : toppingList,
+                calculatePrice());
     }
 }

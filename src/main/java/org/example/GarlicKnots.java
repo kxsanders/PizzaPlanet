@@ -2,12 +2,9 @@ package org.example;
 
 public class GarlicKnots extends Product {
     private int quantity;
-    private static final double UNIT_PRICE = 1.50;
 
     public GarlicKnots(int quantity) {
-        // Product(name, size, basePrice)
-        // Garlic knots have no size SOOOOO use null or a special size
-        super("Garlic Knots", null, UNIT_PRICE);
+        super("Garlic Knots", Size.SMALL, PricingUtility.getGarlicKnotsPrice());
         this.quantity = quantity;
     }
 
@@ -17,11 +14,11 @@ public class GarlicKnots extends Product {
 
     @Override
     public double calculatePrice() {
-        return UNIT_PRICE * quantity;
+        return quantity * PricingUtility.getGarlicKnotsPrice();
     }
 
     @Override
     public String toString() {
-        return quantity + "x Garlic Knots - $" + String.format("%.2f", calculatePrice());
+        return String.format("%dx %s - $%.2f", quantity, getName(), calculatePrice());
     }
 }

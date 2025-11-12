@@ -29,6 +29,8 @@ public class OrderScreenPanel extends JPanel {
 
         //Order Summary
         orderSummary = new JTextArea(10, 40);
+        orderSummary.setLineWrap(true);
+        orderSummary.setWrapStyleWord(true);
         orderSummary.setEditable(false);
         orderSummary.setBackground(new Color(25, 28, 55));
         orderSummary.setForeground(Color.WHITE);
@@ -45,18 +47,19 @@ public class OrderScreenPanel extends JPanel {
         totalLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 20));
 
         //Buttons
-        JPanel buttonPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        JPanel buttonPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         buttonPanel.setBackground(new Color(15, 18, 40));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(15, 100, 30, 100));
 
         JButton addPizza = new JButton("⟡ Add Pizza ⟡ ");
         JButton addDrink = new JButton("⟡ Add Drink ⟡");
         JButton addKnots = new JButton("⟡ Add Garlic Knots ⟡");
+        JButton addSides = new JButton("⟡ Add Sides ⟡");
         JButton checkout = new JButton("⟡ Complete Mission ⟡");
         JButton cancel = new JButton("⟡ Abort Mission ⟡");
         JButton back = new JButton("⟡ Return to Base ⟡");
 
-        for (JButton b : new JButton[]{addPizza, addDrink, addKnots, checkout, cancel, back}) {
+        for (JButton b : new JButton[]{addPizza, addDrink, addKnots, addSides, checkout, cancel, back}) {
             b.setBackground(new Color(162, 102, 255));
             b.setForeground(Color.WHITE);
             b.setFocusPainted(false);
@@ -66,6 +69,7 @@ public class OrderScreenPanel extends JPanel {
         buttonPanel.add(addPizza);
         buttonPanel.add(addDrink);
         buttonPanel.add(addKnots);
+        buttonPanel.add(addSides);
         buttonPanel.add(checkout);
         buttonPanel.add(cancel);
         buttonPanel.add(back);
@@ -84,10 +88,11 @@ public class OrderScreenPanel extends JPanel {
         //ACTIONS
         addPizza.addActionListener(e -> onAddPizza());
         addDrink.addActionListener(e -> onAddDrink());
-        //addKnots.addActionListener(e -> onAddKnots());
-        //checkout.addActionListener(e -> onCheckout());
-        //cancel.addActionListener(e -> onCancel());
-        //back.addActionListener(e -> onBack.run());
+        addKnots.addActionListener(e -> onAddKnots());
+        addSides.addActionListener(e -> showSidesDialog());
+        checkout.addActionListener(e -> onCheckout());
+        cancel.addActionListener(e -> onCancel());
+        back.addActionListener(e -> onBack.run());
     }
 
     public void updateSummary() {
@@ -201,7 +206,52 @@ public class OrderScreenPanel extends JPanel {
         updateSummary();
     }
 
+    private void onAddKnots() {
+        String qtyKnots = JOptionPane.showInputDialog(this, "How many orders of Garlic Knots would you like?");
 
+        if (qtyKnots == null)
+            return;
+
+        int qty;
+        try {
+            qty = Integer.parseInt(qtyKnots.trim());
+        }
+        catch (Exception exception) {
+            JOptionPane.showMessageDialog(this, "Invalid number.");
+            return;
+        }
+
+        if (qty <= 0)
+            return;
+
+        org.example.GarlicKnots knots = new org.example.GarlicKnots(qty);
+        currentOrder.addProduct(knots);
+        updateSummary();
+    }
+
+    private void showSidesDialog() {
+
+    }
+
+    private void onCheckout() {
+        long pizzas = currentOrder.getProducts().stream().filter(p -> p instanceof org.example.Pizza).count();
+        long others = currentOrder.getProducts().size() - pizzas;
+
+        if (pizzas == 0 && others == 0) {
+            JOptionPane.showMessageDialog(this, "You must add at least one item to complete your mission.");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this, "Complete mission and save receipt?", "Confirm Checkout", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    private void onCancel() {
+        int confirmCancel = JOptionPane.showConfirmDialog(this,
+                "Abort mission and discard this order?", "Cancel Order", JOptionPane.YES_NO_OPTION);
+        if (confirmCancel == JOptionPane.YES_OPTION)
+            onBack.run();
+    }
 
 
 }

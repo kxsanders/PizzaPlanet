@@ -11,40 +11,41 @@ public class PricingUtility {
         };
     }
 
-    // == MEAT ==
-    public static double getMeatPrice(Size size, boolean extra) {
-      if (!extra) {
+    // == MEAT PREMIUM TOPPINGS ==
+    public static double getMeatPrice(Size size, boolean isExtra) {
+
          return switch (size) {
-             case SMALL ->  1.00;
-             case MEDIUM -> 2.00;
-             case LARGE ->  3.00;
+             case SMALL -> isExtra ? 0.50 : 1.00;
+             case MEDIUM -> isExtra ? 1.00 : 2.00;
+             case LARGE ->  isExtra ? 1.50 : 3.00;
          };
-      }
-      else {
-          return switch (size) {
-              case SMALL -> 0.50;
-              case MEDIUM -> 1.00;
-              case LARGE ->  1.50;
-          };
-      }
     }
 
     // == CHEESE ==
-    public static double getCheesePrice(Size size, boolean extra) {
-        if (!extra) {
+    public static double getCheesePrice(Size size, boolean isExtra) {
             return switch (size) {
-                case SMALL -> 0.75;
-                case MEDIUM -> 1.50;
-                case LARGE -> 2.25;
+                case SMALL -> isExtra ? 0.30 : 0.75;
+                case MEDIUM -> isExtra ? 0.60 : 1.50;
+                case LARGE -> isExtra ? 0.90 : 2.25;
             };
-        }
-        else {
-            return switch (size) {
-                case SMALL -> 0.30;
-                case MEDIUM -> 0.60;
-                case LARGE -> 0.90;
-            };
-        }
+    }
+
+    public static double getRegularToppingPrice() {
+        return 0.00;
+    }
+
+    // == DRINKS ==
+    public static double getDrinkPrice(Size size) {
+        return switch (size) {
+            case SMALL -> 2.00;
+            case MEDIUM -> 2.50;
+            case LARGE -> 3.00;
+        };
+    }
+
+    // == SIDES ==
+    public static double getGarlicKnotsPrice() {
+        return 1.50;
     }
 
     // == GENERIC TOPPING CALC ==

@@ -10,12 +10,11 @@ public class Drink extends Product {
 
     @Override
     public double calculatePrice() {
-        return getBasePrice();
+        return PricingUtility.getDrinkPrice(getSize());
     }
 
     @Override
     public String toString() {
-        return getName() + " [" + flavor + ", " + getSize().drinkLabel()
-                + "] - $" + String.format("%.2f", calculatePrice());
+        return String.format("%s [%s, %s] - $%.2f", getName(), flavor, getSize(), calculatePrice());
     }
 }
