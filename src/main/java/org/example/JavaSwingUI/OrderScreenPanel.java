@@ -1,9 +1,6 @@
 package org.example.JavaSwingUI;
 
-import org.example.Drink;
-import org.example.Order;
-import org.example.Product;
-import org.example.Size;
+import org.example.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -86,7 +83,7 @@ public class OrderScreenPanel extends JPanel {
 
         //ACTIONS
         addPizza.addActionListener(e -> onAddPizza());
-        //addDrink.addActionListener(e -> onAddDrink());
+        addDrink.addActionListener(e -> onAddDrink());
         //addKnots.addActionListener(e -> onAddKnots());
         //checkout.addActionListener(e -> onCheckout());
         //cancel.addActionListener(e -> onCancel());
@@ -111,10 +108,10 @@ public class OrderScreenPanel extends JPanel {
             JOptionPane.QUESTION_MESSAGE, null, modes, modes[0]);
 
     if (mode == null)
-        return; //user cancelled
+        return;
 
-        if(mode.equals("Signature Pizzas")) {
-            String[] sig = {"Solar Flare (Margherita)", "Cosmic Garden (Veggie)", "Milky Way (Supreme)",
+    if(mode.equals("Signature Pizzas")) {
+        String[] sig = {"Solar Flare (Margherita)", "Cosmic Garden (Veggie)", "Milky Way (Supreme)",
             "Meteor Feast (Meat Lovers)", "Orbit Delight (Hawaiian)"};
             String pick = (String) JOptionPane.showInputDialog(
                     this, "Choose your signature pizza:", "Signature Pizzas",
@@ -169,6 +166,42 @@ public class OrderScreenPanel extends JPanel {
         updateSummary();
 
 }
+
+    private void onAddDrink() {
+        org.example.DrinkFlavor[] flavors = {
+                DrinkFlavor.COLA,
+                DrinkFlavor.LEMONADE,
+                DrinkFlavor.WATER,
+                DrinkFlavor.ROOT_BEER,
+                DrinkFlavor.DR_PEPPER
+        };
+
+        org.example.DrinkFlavor flavor = (org.example.DrinkFlavor) JOptionPane.showInputDialog(
+                this, "Choose flavor:", "Add Drink", JOptionPane.QUESTION_MESSAGE,
+                null, flavors, DrinkFlavor.COLA);
+
+        if (flavor == null)
+            return;
+
+        org.example.Size size = (org.example.Size) JOptionPane.showInputDialog(
+                this, "Choose size:", "Add Drink", JOptionPane.QUESTION_MESSAGE,
+                null, org.example.Size.values(), Size.MEDIUM);
+
+        if (size == null)
+            return;
+
+        double price = switch (size) {
+            case SMALL -> 2.00;
+            case MEDIUM -> 2.50;
+            case LARGE -> 3.00;
+        };
+
+        org.example.Drink drink = new org.example.Drink(flavor.toString(), size, price, flavor);
+        currentOrder.addProduct(drink);
+        updateSummary();
+    }
+
+
 
 
 }
