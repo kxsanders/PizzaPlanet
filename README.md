@@ -4,8 +4,6 @@
 ## 🚀 Overview
 Pizza Planet is a fully interactive **Java POS system** built with a Swing GUI and optional console mode. Customers can build pizzas, select signature pizzas, add drinks, garlic knots, and sides, and complete orders. The system includes receipt generation, CSV order logging, and full OOP architecture.
 
-This implementation meets **all required project specifications**, plus optional bonus features.
-
 ---
 
 # 🧠 Key Features
