@@ -162,19 +162,5 @@ OrderID,ProductType,Name,Size,Crust,Toppings,Stuffed,Qty,Price
 - Builder pattern customization  
 - Live order summary updates  
 - Guaranteed CSV append  
-- Custom pricing engine  
-
----
-
-# ✅ Project Status: COMPLETE
-All required features + optional signature pizza challenge have been implemented with clean OOP structure, GUI support, and persistent receipt storage.
-
-Let me know if you want:
-- A presentation script  
-- A class diagram image  
-- A flowchart  
-- More README styling  
-- A link-style table of contents  
-
-Happy to help polish it! 🚀
+- Custom pricing engine
 
