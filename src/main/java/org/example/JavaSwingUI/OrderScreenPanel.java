@@ -108,69 +108,46 @@ public class OrderScreenPanel extends JPanel {
 
     //add handlers for each button
     private void onAddPizza() {
+
         String[] modes = {"Build your Own", "Signature Pizzas"};
-        String mode = (String) JOptionPane.showInputDialog(this, "Choose pizza mode:", "Add Pizza",
-            JOptionPane.QUESTION_MESSAGE, null, modes, modes[0]);
+        String mode = (String) JOptionPane.showInputDialog(
+                this, "Choose pizza mode:",
+                "Add Pizza", JOptionPane.QUESTION_MESSAGE,
+                null, modes, modes[0]);
 
-    if (mode == null)
-        return;
+        if (mode == null) return;
 
-    if(mode.equals("Signature Pizzas")) {
-        String[] sig = {"Solar Flare (Margherita)", "Cosmic Garden (Veggie)", "Milky Way (Supreme)",
-            "Meteor Feast (Meat Lovers)", "Orbit Delight (Hawaiian)"};
+        // --- Signature Pizzas ---
+        if (mode.equals("Signature Pizzas")) {
+            String[] sig = {"Cosmic Margherita", "Nebula Veggie", "Supernova Supreme",
+                    "Meteor Meatstorm", "Lunar Hawaiian"};
+
             String pick = (String) JOptionPane.showInputDialog(
-                    this, "Choose your signature pizza:", "Signature Pizzas",
-                    JOptionPane.QUESTION_MESSAGE, null, sig, sig[0]);
+                    this, "Choose your signature pizza:",
+                    "Signature Pizzas", JOptionPane.QUESTION_MESSAGE,
+                    null, sig, sig[0]);
 
-            if (pick == null)
-                return;
+            if (pick == null) return;
 
-            org.example.Pizza pizza = switch (pick) {
-                case "Solar Flare (Margherita)" -> org.example.SignaturePizzaHelper.margherita();
-                case "Cosmic Garden (Veggie)" -> org.example.SignaturePizzaHelper.veggie();
-                case "Milky Way (Supreme)" -> org.example.SignaturePizzaHelper.supreme();
-                case "Meteor Feast (Meat Lovers)" -> org.example.SignaturePizzaHelper.meatLovers();
-                case "Orbit Delight (Hawaiian)" -> org.example.SignaturePizzaHelper.hawaiian();
+            Pizza pizza = switch (pick) {
+                case "Cosmic Margherita" -> SignaturePizzaHelper.margherita();
+                case "Nebula Veggie" -> SignaturePizzaHelper.veggie();
+                case "Supernova Supreme" -> SignaturePizzaHelper.supreme();
+                case "Meteor Meatstorm" -> SignaturePizzaHelper.meatLovers();
+                case "Lunar Hawaiian" -> SignaturePizzaHelper.hawaiian();
                 default -> null;
             };
 
-            if (pizza!= null) {
+            if (pizza != null) {
                 currentOrder.addProduct(pizza);
                 updateSummary();
             }
-
             return;
         }
 
-        //BYO PIZZA
-        org.example.Size size = (org.example.Size) JOptionPane.showInputDialog(
-                this, "Select size:", "Build Your Own",
-                JOptionPane.QUESTION_MESSAGE, null, org.example.Size.values(),
-                org.example.Size.MEDIUM);
-
-        if (size == null)
-            return;
-
-        org.example.CrustType crust = (org.example.CrustType) JOptionPane.showInputDialog(
-          this, "Select crust type:", "Build Your Own",
-                JOptionPane.QUESTION_MESSAGE, null, org.example.CrustType.values(),
-                org.example.CrustType.REGULAR);
-
-        if (crust == null)
-            return;
-
-        int stuffed = JOptionPane.showConfirmDialog(this, "Stuffed crust?", "Build Your Own",
-                JOptionPane.YES_NO_OPTION);
-        boolean stuffedCrust = stuffed == JOptionPane.YES_OPTION;
-
-        double base = org.example.PricingUtility.getBasePrice(size);
-
-        org.example.Pizza pizza = new org.example.Pizza("Custom Pizza", size, base, crust, stuffedCrust,
-                new java.util.ArrayList<>());
-        currentOrder.addProduct(pizza);
-        updateSummary();
-
-}
+        // --- Build Your Own ---
+        app.showAddPizzaScreen(currentOrder);
+    }
 
     private void onAddDrink() {
         org.example.DrinkFlavor[] flavors = {
@@ -261,16 +238,46 @@ public class OrderScreenPanel extends JPanel {
     }
 
     private void onCheckout() {
-        long pizzas = currentOrder.getProducts().stream().filter(p -> p instanceof org.example.Pizza).count();
+
+        long pizzas = currentOrder.getProducts().stream()
+                .filter(p -> p instanceof org.example.Pizza)
+                .count();
+
         long others = currentOrder.getProducts().size() - pizzas;
 
+        // Business rule: can't checkout with nothing
         if (pizzas == 0 && others == 0) {
-            JOptionPane.showMessageDialog(this, "You must add at least one item to complete your mission.");
+            JOptionPane.showMessageDialog(this,
+                    "You must add at least one item to complete your mission.");
             return;
         }
 
-        int confirm = JOptionPane.showConfirmDialog(this, "Complete mission and save receipt?", "Confirm Checkout", JOptionPane.WARNING_MESSAGE);
-        return;
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Complete mission and save receipt?",
+                "Confirm Checkout",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm != JOptionPane.YES_OPTION)
+            return;
+
+        // --- SAVE ORDER ---
+        try {
+            org.example.FileManager.saveOrder(currentOrder);
+
+            JOptionPane.showMessageDialog(this,
+                    "Mission Complete! Receipts generated successfully.");
+
+            // Go back home
+            onBack.run();
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Error saving receipt: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void onCancel() {
@@ -279,6 +286,5 @@ public class OrderScreenPanel extends JPanel {
         if (confirmCancel == JOptionPane.YES_OPTION)
             onBack.run();
     }
-
 
 }

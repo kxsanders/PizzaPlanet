@@ -2,39 +2,40 @@ package org.example;
 
 public class PricingUtility {
 
-    // BASE PIZZA PRICE
+    // Base crust price by size
     public static double getBasePrice(Size size) {
         return switch (size) {
-            case SMALL -> 8.50;
-            case MEDIUM -> 12.00;
-            case LARGE -> 16.50;
+            case SMALL -> 8.50;   // 8"
+            case MEDIUM -> 12.00; // 12"
+            case LARGE -> 16.50;  // 16"
         };
     }
 
-    // == MEAT PREMIUM TOPPINGS ==
-    public static double getMeatPrice(Size size, boolean isExtra) {
-
-         return switch (size) {
-             case SMALL -> isExtra ? 0.50 : 1.00;
-             case MEDIUM -> isExtra ? 1.00 : 2.00;
-             case LARGE ->  isExtra ? 1.50 : 3.00;
-         };
+    // Meat (premium)
+    public static double getMeatPrice(Size size, boolean extra) {
+        // full price for this topping (regular or extra)
+        return switch (size) {
+            case SMALL -> extra ? 1.00 + 0.50 : 1.00;
+            case MEDIUM -> extra ? 2.00 + 1.00 : 2.00;
+            case LARGE -> extra ? 3.00 + 1.50 : 3.00;
+        };
     }
 
-    // == CHEESE ==
-    public static double getCheesePrice(Size size, boolean isExtra) {
-            return switch (size) {
-                case SMALL -> isExtra ? 0.30 : 0.75;
-                case MEDIUM -> isExtra ? 0.60 : 1.50;
-                case LARGE -> isExtra ? 0.90 : 2.25;
-            };
+    // Cheese (premium)
+    public static double getCheesePrice(Size size, boolean extra) {
+        return switch (size) {
+            case SMALL -> extra ? 0.75 + 0.30 : 0.75;
+            case MEDIUM -> extra ? 1.50 + 0.60 : 1.50;
+            case LARGE -> extra ? 2.25 + 0.90 : 2.25;
+        };
     }
 
-    public static double getRegularToppingPrice() {
+    // Regular toppings & sauces & included sides
+    public static double getFreeTopping() {
         return 0.00;
     }
 
-    // == DRINKS ==
+    // Drinks
     public static double getDrinkPrice(Size size) {
         return switch (size) {
             case SMALL -> 2.00;
@@ -43,17 +44,8 @@ public class PricingUtility {
         };
     }
 
-    // == SIDES ==
     public static double getGarlicKnotsPrice() {
         return 1.50;
     }
-
-    // == GENERIC TOPPING CALC ==
-    public static double getToppingPrice(Size size, Topping topping) {
-        return switch (topping.getCategory()) {
-            case MEAT -> getMeatPrice(size, topping.isExtra());
-            case CHEESE -> getCheesePrice(size, topping.isExtra());
-            default -> 0.00; //regular toppings and sauces
-        };
-    }
 }
+

@@ -4,31 +4,38 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 public class FileManager {
 
-    private static final String RECEIPTS_FOLDER = "src/main/resources/receipts/";
-    private static final String MASTER_CSV = RECEIPTS_FOLDER + "receipt.csv";
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+    private static final String RECEIPTS_FOLDER = "src/main/resources/Receipts/";
+    private static final String MASTER_CSV = RECEIPTS_FOLDER + "Receipt.csv";
+    private static final DateTimeFormatter FORMATTER =
+            DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
 
-    public void saveOrder(Order order) {
+    // Public method called by Swing checkout.
+    public static void saveOrder(Order order) throws IOException {
 
-        //Ensure folder exists
-        new File(RECEIPTS_FOLDER).mkdirs();
+        // Ensure folder exists
+        File folder = new File(RECEIPTS_FOLDER);
+        if (!folder.exists()) folder.mkdirs();
 
+        // Generate timestamp
         String timestamp = LocalDateTime.now().format(FORMATTER);
-        String txtFile = RECEIPTS_FOLDER + timestamp + ".txt";
+        String txtFilePath = RECEIPTS_FOLDER + timestamp + ".txt";
 
-        saveOrderAsText(order, txtFile);
+        // Save both formats
+        saveOrderAsText(order, txtFilePath);
         saveOrderAsCSV(order);
     }
 
-    //save the txt file
-    private void saveOrderAsText(Order order, String filePath) {
+    //Saves receipt as a TXT file.
+    private static void saveOrderAsText(Order order, String filePath) throws IOException {
+
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+
             writer.println("==================================================");
             writer.println("                PIZZA PLANET RECEIPT              ");
             writer.println("==================================================");
@@ -44,79 +51,75 @@ public class FileManager {
             writer.println("--------------------------------------------------");
             writer.printf("TOTAL: $%.2f%n", order.calculateTotal());
             writer.println("==================================================");
-            writer.println("Thank you for choosing Pizza Planet!");
+            writer.println("   Thank you for choosing Pizza Planet!");
             writer.println("==================================================");
 
-            System.out.println("Text receipt saved: " + filePath);
-
-        }
-        catch(IOException e){
-            System.err.println("Error writing to TXT receipt.");
+            System.out.println("TXT receipt saved");
         }
     }
 
-    //save the CSV file
-    private void saveOrderAsCSV(Order order) {
-
+    //Saves receipt details to receipts.csv in pipe format.
+    private static void saveOrderAsCSV(Order order) throws IOException {
 
         boolean needsHeader = !new File(MASTER_CSV).exists();
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(MASTER_CSV, true))) {
 
+            // Write header once
             if (needsHeader) {
-                writer.println("OrderID | ProductType | Name | Size | CrustType | Toppings | StuffedCrust | Qty | Price");
+                writer.println("OrderID|ProductType|Name|Size|CrustType|Toppings|StuffedCrust|Qty|Price");
             }
 
+            // LOOP THROUGH ITEMS
             for (Product product : order.getProducts()) {
 
-                // ---------- PIZZA ----------
+                // ==== PIZZA ====
                 if (product instanceof Pizza pizza) {
 
                     String toppings = pizza.getToppings().stream()
                             .map(Topping::getName)
-                            .reduce((a, b) -> a + " | " + b)
-                            .orElse("");
+                            .collect(Collectors.joining(","));
 
-                    writer.printf("%d,Pizza,%s,%s,%s,\"%s\",%b,,%.2f%n",
-                            order.getOrderId(),      // OrderID
-                            product.getName(),       // Name
-                            product.getSize(),       // Size
-                            pizza.getCrustType(),    // Crust
-                            toppings,                // Toppings
-                            pizza.isStuffedCrust(),  // Stuffed
-                            pizza.calculatePrice()   // Price
+                    writer.printf("%d|Pizza|%s|%s|%s|%s|%b|1|%.2f%n",
+                            order.getOrderId(),
+                            pizza.getName(),
+                            pizza.getSize(),
+                            pizza.getCrustType(),
+                            toppings,
+                            pizza.isStuffedCrust(),
+                            pizza.calculatePrice()
                     );
                 }
 
-                // ---------- DRINK ----------
+                // ==== DRINK ====
                 else if (product instanceof Drink drink) {
-
-                    writer.printf("%d,Drink,%s,%s,,, ,1,%.2f%n",
-                            order.getOrderId(),      // OrderID
-                            product.getName(),       // Name
-                            product.getSize(),       // Size
-                            drink.calculatePrice()   // Price
+                    writer.printf("%d|Drink|%s|%s||||1|%.2f%n",
+                            order.getOrderId(),
+                            drink.getName(),
+                            drink.getSize(),
+                            drink.calculatePrice()
                     );
                 }
 
-                // ---------- GARLIC KNOTS ----------
+                // ==== GARLIC KNOTS ====
                 else if (product instanceof GarlicKnots knots) {
+                    writer.printf("%d|GarlicKnots|Garlic Knots||| | |%d|%.2f%n",
+                            order.getOrderId(),
+                            knots.getQuantity(),
+                            knots.calculatePrice()
+                    );
+                }
 
-                    writer.printf("%d,GarlicKnots,%s,,,,,%d,%.2f%n",
-                            order.getOrderId(),      // OrderID
-                            product.getName(),       // Name
-                            knots.getQuantity(),     // Quantity
-                            knots.calculatePrice()   // Price
+                // ==== SIDES ====
+                else if (product instanceof Sides side) {
+                    writer.printf("%d|Side|%s||||1|0.00%n",
+                            order.getOrderId(),
+                            side.getName()
                     );
                 }
             }
 
-            // total row
-            writer.printf(",,TOTAL,,,,,,%.2f%n", order.calculateTotal());
-            System.out.println("CSV receipt saved: " + MASTER_CSV);
-
-        } catch (IOException e) {
-            System.err.println("Error writing to CSV receipt.");
+            System.out.println("CSV receipt saved → " + MASTER_CSV);
         }
     }
 }

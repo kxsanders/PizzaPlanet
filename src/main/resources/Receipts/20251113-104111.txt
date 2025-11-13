@@ -1,0 +1,25 @@
+==================================================
+                PIZZA PLANET RECEIPT              
+==================================================
+Order ID: 418491
+Date: 2025-11-13T10:41:11.752230800
+--------------------------------------------------
+Supernova Supreme (MEDIUM, Regular crust crust)
+   Pepperoni - $2.00
+   Sausage - $2.00
+   Mozzarella - $1.50
+   Onions - $0.00
+   Bell Peppers - $0.00
+   Olives - $0.00
+   Mushrooms - $0.00
+   Marinara - $0.00
+   Stuffed crust: No
+   Item Total: $17.50
+
+Root beer [Root beer, MEDIUM] - $2.50
+
+--------------------------------------------------
+TOTAL: $20.00
+==================================================
+   Thank you for choosing Pizza Planet!
+==================================================

@@ -8,6 +8,8 @@ import javax.swing.ImageIcon;
 
 public class PizzaPlanetApp extends JFrame {
 
+    private JPanel homePanel;
+
     public PizzaPlanetApp() {
 
         //window title and layout
@@ -40,32 +42,20 @@ public class PizzaPlanetApp extends JFrame {
         JLabel logoLabel = new JLabel(new ImageIcon(scaledImage));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-
         //Title
-        JLabel titleLabel = new JLabel("<html><div style='text-align: center;'>Welcome to Pizza Planet!<br>Ready for takeoff?</div></html>", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel(
+                "<html><div style='text-align: center;'>Welcome to Pizza Planet!<br>Ready for takeoff?</div></html>",
+                SwingConstants.CENTER
+        );
         titleLabel.setFont(new Font("Orbitron", Font.BOLD, 22));
         titleLabel.setForeground(cosmicWhite);
 
-        //stack border and title vertically
+        //stack border, logo, and title vertically
         JPanel headerPanel = new JPanel(new GridLayout(3, 1));
         headerPanel.setBackground(spaceBlue);
         headerPanel.add(topBorder);
         headerPanel.add(logoLabel);
         headerPanel.add(titleLabel);
-
-        /// Commented this out, I feel like it looks better without it
-        //Add SUBTITLE
-
-        //JLabel subLabel = new JLabel("Prepare for your next intergalactic pizza mission", SwingConstants.CENTER);
-        //subLabel.setFont(new Font("Sansserif", Font.ITALIC, 15));
-        //subLabel.setForeground(neonPurple);
-        //subLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 20, 10));
-
-        //JPanel centerPanel = new JPanel(new BorderLayout());
-       //centerPanel.setBackground(spaceBlue);
-       //centerPanel.add(subLabel, BorderLayout.CENTER);
-
-
 
         //Button Panel
         JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 12, 12));
@@ -98,14 +88,12 @@ public class PizzaPlanetApp extends JFrame {
         footerPanel.add(buttonPanel, BorderLayout.CENTER);
         footerPanel.add(bottomBorder, BorderLayout.SOUTH);
 
+        mainPanel.add(headerPanel, BorderLayout.NORTH);
         mainPanel.add(footerPanel, BorderLayout.SOUTH);
 
-        //Put it all together
-        mainPanel.add(headerPanel, BorderLayout.NORTH);
-        //mainPanel.add(centerPanel, BorderLayout.CENTER);
-
-        add(mainPanel);
-
+        // Save this as the "home screen" so we can return to it later
+        homePanel = mainPanel;
+        setContentPane(homePanel);
 
         //=== ACTIONS ===
         newOrderButton.addActionListener(e -> openOrderScreen());
@@ -113,18 +101,11 @@ public class PizzaPlanetApp extends JFrame {
     }
 
     private void openOrderScreen() {
-        //capture current content to restore on "Back"
-        final Container homeContent = getContentPane();
-
         //create new order
-        Order order = new Order((int)(Math.random() * 900000) + 100000, new java.util.ArrayList<>());
+        Order order = new Order((int) (Math.random() * 900000) + 100000, new java.util.ArrayList<>());
 
-        // create order panel with onBack action to restore home
-        Runnable onBack = () -> {
-            setContentPane(homeContent);
-            revalidate();
-            repaint();
-        };
+        // when user hits "Back" from order screen → return to main menu
+        Runnable onBack = this::showMainMenu;
 
         OrderScreenPanel panel = new OrderScreenPanel(this, order, onBack);
         setContentPane(panel);
@@ -132,12 +113,31 @@ public class PizzaPlanetApp extends JFrame {
         repaint();
     }
 
+    public void showOrderScreen(Order order) {
+        OrderScreenPanel panel = new OrderScreenPanel(this, order, () -> showMainMenu());
+        panel.updateSummary();
+        setContentPane(panel);
+        revalidate();
+        repaint();
+    }
 
-    public static void main (String[] args) {
+    public void showMainMenu() {
+        // Reuse the original main menu panel
+        setContentPane(homePanel);
+        revalidate();
+        repaint();
+    }
 
+    public void showAddPizzaScreen(Order order) {
+        setContentPane(new AddPizzaPanel(this, order));
+        revalidate();
+        repaint();
+    }
+
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-           PizzaPlanetApp app = new PizzaPlanetApp();
-           app.setVisible(true);
+            PizzaPlanetApp app = new PizzaPlanetApp();
+            app.setVisible(true);
         });
     }
 }

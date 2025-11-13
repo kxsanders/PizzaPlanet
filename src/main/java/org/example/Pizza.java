@@ -1,84 +1,78 @@
 package org.example;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Pizza extends Product {
+
     private CrustType crustType;
     private boolean stuffedCrust;
     private List<Topping> toppings;
 
-    public Pizza(String name, Size size, double basePrice, CrustType crustType, boolean stuffedCrust, List<Topping> toppings) {
+    public Pizza(String name, Size size, double basePrice,
+                 CrustType crustType, boolean stuffedCrust, List<Topping> toppings) {
         super(name, size, basePrice);
         this.crustType = crustType;
         this.stuffedCrust = stuffedCrust;
         this.toppings = toppings;
     }
 
-    //getters
     public CrustType getCrustType() {
         return crustType;
-    }
-
-    public List<Topping> getToppings() {
-        return toppings;
-    }
-
-    public void setStuffedCrust(boolean stuffedCrust) {
-        this.stuffedCrust = stuffedCrust;
     }
 
     public boolean isStuffedCrust() {
         return stuffedCrust;
     }
 
+    public void setStuffedCrust(boolean stuffedCrust) {
+        this.stuffedCrust = stuffedCrust;
+    }
+
+    public List<Topping> getToppings() {
+        return toppings;
+    }
+
     public void addTopping(Topping topping) {
         toppings.add(topping);
     }
 
-    public void removeTopping(String toppingName) {
-        toppings.removeIf(t -> t.getName().equalsIgnoreCase(toppingName));
+    public void removeTopping(String name) {
+        toppings.removeIf(t -> t.getName().equalsIgnoreCase(name));
     }
 
-    public boolean canAddExtraCheese() {
-        return toppings.stream().noneMatch(t -> t.getName().equalsIgnoreCase("Extra Cheese"));
-    }
-
-    public List<Topping> getToppingsByCategory(ToppingCategory category) {
-        return toppings.stream().filter(t -> t.getCategory() == category).toList();
-    }
 
     @Override
     public double calculatePrice() {
         double total = getBasePrice();
 
-        //Sum topping prices
         for (Topping t : toppings) {
-            total += t.getPrice(getSize());
+            total += t.getPrice();     // <-- no size arg now
         }
 
-        if (stuffedCrust)
+        // optional stuffed crust upcharge
+        if (stuffedCrust) {
             total += 2.00;
+        }
 
         return total;
     }
 
     @Override
     public String toString() {
-        String toppingList = toppings.stream()
-                .map(t -> t.getName() + " - $" + String.format("%.2f", t.getPrice(getSize())))
-                .collect(Collectors.joining(", "));
+        String toppingText = toppings.isEmpty()
+                ? "   (no toppings)\n"
+                : toppings.stream()
+                .map(Topping::toString)
+                .collect(Collectors.joining("\n   ", "   ", "\n"));
 
-        String signatureLabel = getName().toLowerCase().contains("signature") ? "(Signature) " : "";
-
-        return String.format("%s%s [%s (\"%s\"), %s crust]\nToppings: [%s]\nPrice: $%.2f",
-                signatureLabel,
+        return String.format("%s (%s, %s crust)%n%s   Stuffed crust: %s%n   Item Total: $%.2f",
                 getName(),
                 getSize(),
-                getSize().getInches(),
                 crustType,
-                toppingList.isEmpty() ? "No toppings" : toppingList,
+                toppingText,
+                stuffedCrust ? "Yes" : "No",
                 calculatePrice());
     }
 }
+

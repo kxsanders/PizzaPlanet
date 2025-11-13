@@ -1,5 +1,6 @@
 package org.example;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -99,7 +100,7 @@ public class UserInterface {
         System.out.print("Select: ");
         String input = scanner.nextLine();
 
-        SignaturePizza pizza = null;
+        Pizza pizza = null;
 
         switch (input) {
             case "1" -> pizza = SignaturePizzaHelper.margherita();
@@ -264,7 +265,6 @@ public class UserInterface {
         System.out.println("🗑️ Removed: " + removed.getName() + (removed.isExtra() ? " (extra)" : ""));
     }
 
-    //Once I had selectMeat logic down, I utilized chatGPT to copy-paste the same format
     private void selectMeat(PizzaBuilder builder){
         System.out.println("1) Pepperoni");
         System.out.println("2) Sausage");
@@ -281,12 +281,9 @@ public class UserInterface {
         String[] meats = {"Pepperoni", "Sausage", "Ham", "Bacon", "Chicken", "Meatball"};
 
         int idx;
-
         try {
             idx = Integer.parseInt(input) - 1;
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Invalid.");
             return;
         }
@@ -298,71 +295,63 @@ public class UserInterface {
 
         Size size = builder.getPizza().getSize();
 
-        System.out.println("Extra? (Y/N): ");
+        System.out.print("Extra? (Y/N): ");
         boolean extra = scanner.nextLine().equalsIgnoreCase("Y");
 
-        builder.addTopping(new Topping(meats[idx], ToppingCategory.MEAT, extra, size));
+        double price = PricingUtility.getMeatPrice(size, extra);
+
+        Topping topping = new Topping(meats[idx], ToppingCategory.MEAT, true, extra, price);
+        builder.addTopping(topping);
+
         System.out.println("Added " + meats[idx] + (extra ? " (extra)" : ""));
     }
 
     private void selectCheese(PizzaBuilder builder) {
         System.out.println("\nChoose Cheese:");
         System.out.println("1) Mozzarella");
-        System.out.println("2) Mozzarella (extra)");
-        System.out.println("3) Parmesan");
-        System.out.println("4) Parmesan (extra)");
-        System.out.println("5) Ricotta");
-        System.out.println("6) Ricotta (extra)");
-        System.out.println("7) Goat Cheese");
-        System.out.println("8) Goat Cheese (extra)");
-        System.out.println("9) Buffalo");
-        System.out.println("10) Buffalo (extra)");
+        System.out.println("2) Parmesan");
+        System.out.println("3) Ricotta");
+        System.out.println("4) Goat Cheese");
+        System.out.println("5) Buffalo");
         System.out.println("0) Cancel");
 
         System.out.print("Select: ");
         String input = scanner.nextLine();
-        if (input.equals("0"))
-            return;
+        if (input.equals("0")) return;
 
         String[] cheeses = {"Mozzarella", "Parmesan", "Ricotta", "Goat Cheese", "Buffalo"};
-        boolean extra = false;
-        int baseIndex;
+        int idx;
 
-        int option;
         try {
-            option = Integer.parseInt(input);
-        }
-        catch (Exception e) {
+            idx = Integer.parseInt(input) - 1;
+        } catch (Exception e) {
             System.out.println("Invalid.");
             return;
         }
 
-        if (option < 1 || option > cheeses.length * 2) {
+        if (idx < 0 || idx >= cheeses.length) {
             System.out.println("Invalid.");
             return;
-        }
-
-        //EVEN = extra
-        if (option % 2 == 0) {
-            extra = true;
-            baseIndex = (option / 2) - 1;
-        }
-        else {
-            baseIndex = (option - 1) /2;
         }
 
         Size size = builder.getPizza().getSize();
-        String cheeseName = cheeses[baseIndex];
 
-        //If it's extra but no cheese exists yet, auto add base cheese
-        if (extra && !builder.hasCheese()) {
-            System.out.println("Base cheese not found. Automatically adding base " + cheeseName + " first.");
-            builder.addTopping(new Topping(cheeseName, ToppingCategory.CHEESE, false, size));
+        System.out.print("Extra? (Y/N): ");
+        boolean extra = scanner.nextLine().equalsIgnoreCase("Y");
+
+        // enforce “no extra cheese unless there is cheese”
+        if (extra && !builder.canAddExtraCheese()) {
+            System.out.println("You can't add EXTRA cheese without cheese on the pizza.");
+            System.out.println("Add a base cheese first, then choose extra.");
+            return;
         }
-        //now add user selected topping (base or extra)
-        builder.addTopping(new Topping(cheeseName, ToppingCategory.CHEESE, extra, size));
 
-        System.out.println("Added " + cheeseName + (extra ? " (extra)" : ""));
+        double price = PricingUtility.getCheesePrice(size, extra);
+
+        Topping topping = new Topping(cheeses[idx], ToppingCategory.CHEESE, true, extra, price);
+        builder.addTopping(topping);
+
+        System.out.println("Added " + cheeses[idx] + (extra ? " (extra)" : ""));
     }
 
     private void selectRegular(PizzaBuilder builder) {
@@ -399,15 +388,14 @@ public class UserInterface {
             return;
         }
 
-        Size size = builder.getPizza().getSize();
+        // Regular toppings are included
+        boolean extra = false;
+        double price = PricingUtility.getFreeTopping();
 
-        // Regular toppings are included (price = 0). Still allow “extra”.
-        // but PricingUtility returns 0 for non-premium categories.
-        System.out.print("Add extra? (Y/N): ");
-        boolean extra = scanner.nextLine().equalsIgnoreCase("Y");
+        Topping topping = new Topping(regulars[idx], ToppingCategory.VEGGIE, false, extra, price);
+        builder.addTopping(topping);
 
-        builder.addTopping(new Topping(regulars[idx], ToppingCategory.VEGGIE, extra, size));
-        System.out.println("Added " + regulars[idx] + (extra ? " (extra)" : ""));
+        System.out.println("Added " + regulars[idx]);
     }
 
     private void selectSauce(PizzaBuilder builder) {
@@ -438,14 +426,14 @@ public class UserInterface {
             return;
         }
 
-        Size size = builder.getPizza().getSize();
+        // sauces are included
+        boolean extra = false;
+        double price = PricingUtility.getFreeTopping();
 
-        // Sauce is included; extra doesn’t change price but customers can add extra sauce if they want!
-        System.out.print("Extra? (Y/N): ");
-        boolean extra = scanner.nextLine().equalsIgnoreCase("Y");
+        Topping topping = new Topping(sauces[idx], ToppingCategory.SAUCE, false, extra, price);
+        builder.addTopping(topping);
 
-        builder.addTopping(new Topping(sauces[idx], ToppingCategory.SAUCE, extra, size));
-        System.out.println("Added " + sauces[idx] + (extra ? " (extra)" : ""));
+        System.out.println("Added " + sauces[idx]);
     }
 
     private void addDrink(Order order) {
@@ -624,40 +612,38 @@ public class UserInterface {
     }
 
     private void checkout(Order order) {
-
         var items = order.getProducts();
 
-        //Block if no items
         if (items == null || items.isEmpty()) {
             System.out.println("Your order is empty.");
-            System.out.println("Add at least one pizza OR a drink/garlic knots before checking out.");
+            System.out.println("Add at least one item before checking out.");
             return;
         }
 
         // Display Summary
-        System.out.println("====ORDER SUMMARY===");
+        System.out.println("==== ORDER SUMMARY ====");
         System.out.println(order.displaySummary());
-
         System.out.println("\nConfirm? (Y/N): ");
         String confirm = scanner.nextLine();
 
-        if(!confirm.equalsIgnoreCase("Y")) {
+        if (!confirm.equalsIgnoreCase("Y")) {
             System.out.println("Checkout cancelled. Returning to order menu...");
             return;
         }
 
-        //save receipt
-        FileManager fileManager = new FileManager();
-        fileManager.saveOrder(order);
-
-        System.out.println("\n Order saved!");
-        System.out.println("Returning to HOME MENU...\n");
+        try {
+            FileManager.saveOrder(order);
+            System.out.println("\nOrder saved!");
+            System.out.println("Returning to HOME MENU...\n");
+        }
+        catch (Exception e) {
+            System.out.println("ERROR saving order: " + e.getMessage());
+        }
     }
+
 
     public void start() {
         System.out.println("====Welcome to Pizza Planet!====");
         homeMenu();
     }
-
-
 }
