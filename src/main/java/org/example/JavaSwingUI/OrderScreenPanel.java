@@ -230,7 +230,34 @@ public class OrderScreenPanel extends JPanel {
     }
 
     private void showSidesDialog() {
+        JCheckBox redPepperBox = new JCheckBox("Red Pepper (Included)");
+        JCheckBox parmesanBox = new JCheckBox("Parmesan (Included)");
 
+        redPepperBox.setBackground(new Color(15, 18, 40));
+        redPepperBox.setForeground(Color.WHITE);
+        parmesanBox.setBackground(new Color(15, 18, 40));
+        parmesanBox.setForeground(Color.WHITE);
+
+        JPanel panel = new JPanel(new GridLayout(2, 1));
+        panel.setBackground(new Color(15, 18, 40));
+        panel.add(redPepperBox);
+        panel.add(parmesanBox);
+
+        int result = JOptionPane.showConfirmDialog(
+                this, panel, "Choose your Complimentary Sides", JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            if(redPepperBox.isSelected()) {
+                currentOrder.addProduct(new Sides("Red Pepper"));
+            }
+            if (parmesanBox.isSelected()) {
+                currentOrder.addProduct(new Sides("Parmesan"));
+            }
+
+            updateSummary();
+        }
     }
 
     private void onCheckout() {
